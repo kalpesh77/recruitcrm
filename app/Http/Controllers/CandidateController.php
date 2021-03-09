@@ -18,7 +18,7 @@ class CandidateController extends Controller
     public function index(Request $request)
     {
 
-        if (!$request->bearerToken() || !$request->secure()) {
+        if (!$request->bearerToken()) {
             return response()->json(['error' => 'Invalid request'], 500);
         }
         try {
@@ -37,10 +37,11 @@ class CandidateController extends Controller
 
     public function create(Request $request)
     {
+        //echo 'dfgdfg';exit;
 
-        if (!$request->bearerToken() || !$request->secure()) {
-            return response()->json(['error' => 'Invalid request'], 500);
-        }
+        // if (!$request->bearerToken()) {
+        //     return response()->json(['error' => 'Invalid request'], 500);
+        // }
         try {
             $data = $request->all();
             $validator = Validator::make($data, [
@@ -66,17 +67,20 @@ class CandidateController extends Controller
                 $data['resume']=$name;  
             }  
 
+            if (!empty($data['candidate_dob'])) {
+                $data['candidate_dob'] = strtotime($data['candidate_dob']);
+            }
             Candidate::create($data);
 
             return response(['message' => 'Created successfully'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Invalid request'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     public function search(Request $request)
     {
-        if (!$request->bearerToken() || !$request->secure()) {
+        if (!$request->bearerToken()) {
             return response()->json(['error' => 'Invalid request'], 500);
         }
         try {
@@ -104,7 +108,7 @@ class CandidateController extends Controller
 
     public function show($id, Request $request)
     {
-        if (!$request->bearerToken() || !$request->secure()) {
+        if (!$request->bearerToken()) {
             return response()->json(['error' => 'Invalid request'], 500);
         }
         try {
